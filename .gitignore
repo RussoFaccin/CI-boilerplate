@@ -1,0 +1,8 @@
+*
+!.gitignore
+!README.md
+!application/controllers/Users.php
+!application/libraries/Auth.php
+!application/models/User_model.php
+!application/views/login-page.php
+!application/views/signin-page.php

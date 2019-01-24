@@ -4,6 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Users extends CI_Controller {
     // ROUTE: users/login
     public function login() {
+        // Load [session] Library
+        $this->load->library('session');
         $message = $this->session->flashdata('message');
         $csrf = array(
             'name' => $this->security->get_csrf_token_name(),
@@ -13,6 +15,8 @@ class Users extends CI_Controller {
             'message' => $message,
             'csrf' => $csrf
         );
+        // Load [url] Helper
+        $this->load->helper('url');
         $this->load->view('login-page', $data);
     }
 
@@ -48,13 +52,17 @@ class Users extends CI_Controller {
         // Authenticate user
         // Load Auth Library
 		$this->load->library('Auth');
-		$this->auth->authenticate($user);
-        redirectTo($this, 'welcome');
+        $this->auth->authenticate($user);
+        redirectTo($this, '/');
     }
     
     // ROUTE: users/register
     public function register() {
         if($this->input->method() == 'get') {
+            // Load [url] Helper
+            $this->load->helper('url');
+            // Load [session] Library
+            $this->load->library('session');
             $message = $this->session->flashdata('message');
             $csrf = array(
                 'name' => $this->security->get_csrf_token_name(),
@@ -93,6 +101,7 @@ class Users extends CI_Controller {
             // User model - newUser
             $this->load->model('User_model');
             $this->User_model->newUser($name, $mail, $user, $pass);
+            redirectTo($this, '/');
         }
     }
     
@@ -106,6 +115,10 @@ class Users extends CI_Controller {
 }
 
 function redirectTo($self, $route, $message = null) {
+    // Load [url] Helper
+    $self->load->helper('url');
+    // Load [session] Library
+    $self->load->library('session');
     $self->session->set_flashdata('message', $message);
     redirect(base_url($route), 'location', 301);
 }

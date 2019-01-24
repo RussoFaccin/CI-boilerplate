@@ -13,7 +13,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 </head>
 <body>
-  <form action="<?php echo base_url('users/register'); ?>" class="m-userLogin pure-form pure-form-stacked" method="post">
+  <form action="<?php echo base_url('/users/register'); ?>" class="m-userLogin pure-form pure-form-stacked" method="post">
     <label for="fld_name">Name:</label>
     <input type="text" name="fld_name" id="fld_name">
     <label for="fld_mail">E-mail:</label>
