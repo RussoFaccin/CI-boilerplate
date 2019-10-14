@@ -13,6 +13,12 @@ class Auth {
             // Load [url] Helper
             $app->load->helper('url');
 
+            // Set redirect after login
+            $redirectAfterLogin = base_url(uri_string());
+            $app->session->set_userdata(array(
+                'redirectAfterLogin' => $redirectAfterLogin
+            ));
+
             redirect(base_url($redirectUrl), 'location', 301);
         } else {
             $app->session->set_tempdata('credentials', $sessionData, $expiration);

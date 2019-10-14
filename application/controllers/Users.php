@@ -2,10 +2,46 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Users extends CI_Controller {
-    // ROUTE: users/login
-    public function login() {
+    function __construct() {
+        parent::__construct();
         // Load [session] Library
         $this->load->library('session');
+        // Load [url] Helper
+        $this->load->helper('url');
+		// Load dbforge
+		$this->load->dbforge();
+		// Fields
+		$fields = array(
+            'username' => array(
+                'type' => 'varchar',
+                'constraint' => 100,
+                'unique' => false
+            ),
+            'email' => array(
+                'type' => 'varchar',
+                'constraint' => 100,
+                'unique' => true
+            ),
+            'login' => array(
+                'type' => 'varchar',
+                'constraint' => 100,
+                'unique' => true
+            ),
+            'password' => array(
+                'type' => 'varchar',
+                'constraint' => 100,
+                'unique' => false
+            )
+        );
+        // id field - primary key
+        $this->dbforge->add_field('id', true);
+        // Add fields
+        $this->dbforge->add_field($fields);
+        // Create table 'users' IF NOT EXISTS
+		$this->dbforge->create_table('users', true);
+    }
+    // ROUTE: users/login
+    public function login() {
         $message = $this->session->flashdata('message');
         $csrf = array(
             'name' => $this->security->get_csrf_token_name(),
@@ -15,8 +51,6 @@ class Users extends CI_Controller {
             'message' => $message,
             'csrf' => $csrf
         );
-        // Load [url] Helper
-        $this->load->helper('url');
         $this->load->view('login-page', $data);
     }
 
@@ -51,18 +85,17 @@ class Users extends CI_Controller {
 
         // Authenticate user
         // Load Auth Library
-		$this->load->library('Auth');
-        $this->auth->authenticate($user);
-        redirectTo($this, '/');
+        $this->load->library('Auth');
+        if ($this->auth->authenticate($user)) {
+            // Redirect after login
+            $redirectUrl = $this->session->userdata('redirectAfterLogin');
+            redirect($redirectUrl);
+        }
     }
     
     // ROUTE: users/register
     public function register() {
         if($this->input->method() == 'get') {
-            // Load [url] Helper
-            $this->load->helper('url');
-            // Load [session] Library
-            $this->load->library('session');
             $message = $this->session->flashdata('message');
             $csrf = array(
                 'name' => $this->security->get_csrf_token_name(),
@@ -93,7 +126,7 @@ class Users extends CI_Controller {
                     `login` varchar(100) DEFAULT NULL,
                     `password` varchar(100) DEFAULT NULL,
                     PRIMARY KEY (`id`)
-                ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+                ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
             ";
 
             $query = $this->db->query($sql);
@@ -115,10 +148,6 @@ class Users extends CI_Controller {
 }
 
 function redirectTo($self, $route, $message = null) {
-    // Load [url] Helper
-    $self->load->helper('url');
-    // Load [session] Library
-    $self->load->library('session');
     $self->session->set_flashdata('message', $message);
     redirect(base_url($route), 'location', 301);
 }
